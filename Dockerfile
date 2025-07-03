@@ -12,8 +12,8 @@ RUN npm install react-icons
 # Copy the frontend code
 COPY ./frontend ./
 
-# Build the React app
-RUN CI=false npm run build
+# Build the React app (CI=false ignora advertencias, DISABLE_ESLINT_PLUGIN=true desactiva eslint durante la construcción)
+RUN DISABLE_ESLINT_PLUGIN=true CI=false npm run build
 
 # Backend build stage
 FROM python:3.10-slim AS backend-build

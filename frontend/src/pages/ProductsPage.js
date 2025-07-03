@@ -15,6 +15,9 @@ export default function ProductsPage() {
   const [maxPrice, setMaxPrice] = useState('');
   const [sortBy, setSortBy] = useState('nombre');
   const [sortDesc, setSortDesc] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [isUsed, setIsUsed] = useState(null);
+  const [categories, setCategories] = useState([]);
 
   // Fetch products when filters change
   useEffect(() => {
@@ -54,6 +57,24 @@ export default function ProductsPage() {
     
     fetchProducts();
   }, [searchQuery, minPrice, maxPrice, sortBy, sortDesc, setSearchParams]);
+
+  // Cargar categorías
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        // Dado que no tenemos un endpoint de categorías en nuestra DB actual,
+        // inicializamos con una lista vacía o podríamos crear categorías hardcodeadas
+        // Cuando se implemente el endpoint de categorías, descomentar:
+        // const response = await categoryAPI.getCategories();
+        // setCategories(response.data);
+        setCategories([]);
+      } catch (err) {
+        console.error('Error fetching categories:', err);
+      }
+    };
+    
+    fetchCategories();
+  }, []);
 
   const handleFilter = (e) => {
     e.preventDefault();

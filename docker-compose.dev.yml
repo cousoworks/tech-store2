@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  # Backend service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: techstore-backend
+    restart: unless-stopped
+    volumes:
+      - ./backend:/app
+    environment:
+      - SERVER_NAME=TechStore API
+      - SERVER_HOST=http://localhost:8000
+      - BACKEND_CORS_ORIGINS=["http://localhost:3000","http://localhost:5173"]
+      - SECRET_KEY=local_dev_secret_key
+      - SQLALCHEMY_DATABASE_URI=sqlite:///./app/db/inventario.db
+    ports:
+      - "8000:8000"
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Frontend service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: techstore-frontend
+    restart: unless-stopped
+    volumes:
+      - ./frontend:/app
+      # Excluimos node_modules para evitar problemas de permisos
+      - /app/node_modules
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000/api/v1
+      - CHOKIDAR_USEPOLLING=true
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend

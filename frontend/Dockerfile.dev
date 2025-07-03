@@ -1,0 +1,18 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Instalar dependencias
+RUN npm install
+RUN npm install react-icons
+
+# El código fuente se montará como volumen
+
+# Exponer puerto
+EXPOSE 3000
+
+# Iniciar en modo desarrollo con hot-reload
+CMD ["npm", "start"]
