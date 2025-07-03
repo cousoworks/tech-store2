@@ -5,7 +5,8 @@ import api from '../services/api';
 const AccountPage = () => {
   const { user, updateUserData } = useAuth();
   const [profile, setProfile] = useState({
-    fullName: '',
+    nombre: '',
+    apellidos: '',
     email: '',
     currentPassword: '',
     newPassword: '',
@@ -14,16 +15,36 @@ const AccountPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [orders, setOrders] = useState([]);
+  const [loadingOrders, setLoadingOrders] = useState(false);
 
   useEffect(() => {
     if (user) {
       setProfile({
         ...profile,
-        fullName: user.full_name || '',
+        nombre: user.nombre || '',
+        apellidos: user.apellidos || '',
         email: user.email || '',
       });
+      
+      // Fetch user orders
+      fetchOrders();
     }
   }, [user]);
+
+  const fetchOrders = async () => {
+    if (!user) return;
+    
+    setLoadingOrders(true);
+    try {
+      const response = await api.get('/orders');
+      setOrders(response.data);
+    } catch (err) {
+      console.error('Error fetching orders:', err);
+    } finally {
+      setLoadingOrders(false);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -39,7 +60,8 @@ const AccountPage = () => {
       setLoading(true);
       
       const updatedData = {
-        full_name: profile.fullName,
+        nombre: profile.nombre,
+        apellidos: profile.apellidos,
       };
       
       const response = await api.put('/users/me', updatedData);

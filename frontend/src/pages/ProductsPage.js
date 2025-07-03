@@ -6,33 +6,15 @@ import ProductCard from '../components/ProductCard';
 export default function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
   // Filter and sort states
-  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
-  const [sortBy, setSortBy] = useState(searchParams.get('sort') === 'newest' ? 'created_at' : 'price');
-  const [sortDesc, setSortDesc] = useState(true);
-  const [isUsed, setIsUsed] = useState(null);
-
-  // Fetch categories on component mount
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await categoryAPI.getCategories();
-        setCategories(response.data);
-      } catch (err) {
-        console.error('Error fetching categories:', err);
-        setError('Failed to load categories');
-      }
-    };
-
-    fetchCategories();
-  }, []);
+  const [sortBy, setSortBy] = useState('nombre');
+  const [sortDesc, setSortDesc] = useState(false);
 
   // Fetch products when filters change
   useEffect(() => {
@@ -41,17 +23,21 @@ export default function ProductsPage() {
       
       try {
         const params = {
-          category_id: selectedCategory || undefined,
-          search: searchQuery || undefined,
-          min_price: minPrice || undefined,
-          max_price: maxPrice || undefined,
-          sort_by: sortBy,
-          sort_desc: sortDesc,
-          is_used: isUsed === null ? undefined : isUsed,
+          nombre: searchQuery || undefined,
         };
         
         const response = await productAPI.getProducts(params);
-        setProducts(response.data);
+        // Adaptar la estructura de datos para que funcione con la interfaz
+        const adaptedProducts = response.data.map(item => ({
+          id: item.id,
+          name: item.nombre,
+          description: item.descripcion || '',
+          price: item.precio,
+          stock: item.cantidad,
+          image_url: item.image_url,
+          created_at: item.fecha_creacion
+        }));
+        setProducts(adaptedProducts);
         setError(null);
       } catch (err) {
         console.error('Error fetching products:', err);
@@ -63,13 +49,11 @@ export default function ProductsPage() {
 
     // Update URL search params
     const newSearchParams = new URLSearchParams();
-    if (selectedCategory) newSearchParams.set('category', selectedCategory);
     if (searchQuery) newSearchParams.set('search', searchQuery);
-    if (sortBy === 'created_at' && sortDesc) newSearchParams.set('sort', 'newest');
     setSearchParams(newSearchParams);
     
     fetchProducts();
-  }, [selectedCategory, searchQuery, minPrice, maxPrice, sortBy, sortDesc, isUsed, setSearchParams]);
+  }, [searchQuery, minPrice, maxPrice, sortBy, sortDesc, setSearchParams]);
 
   const handleFilter = (e) => {
     e.preventDefault();

@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "TechStore API"
     
     # Database settings
-    SQLALCHEMY_DATABASE_URI: str = "sqlite:///./techstore.db"
+    SQLALCHEMY_DATABASE_URI: str = "sqlite:///./app/db/inventario.db"
     SQLALCHEMY_TEST_DATABASE_URI: str = "sqlite:///./test.db"
     
     # User related

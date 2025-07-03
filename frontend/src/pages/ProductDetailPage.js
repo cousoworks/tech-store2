@@ -18,7 +18,20 @@ const ProductDetailPage = () => {
       try {
         setLoading(true);
         const response = await api.get(`/products/${id}`);
-        setProduct(response.data);
+        // Adaptar la estructura de datos para que funcione con la interfaz
+        const adaptedProduct = {
+          id: response.data.id,
+          name: response.data.nombre,
+          description: response.data.descripcion || '',
+          price: response.data.precio,
+          stock: response.data.cantidad,
+          image_url: response.data.image_url,
+          created_at: response.data.fecha_creacion,
+          avg_rating: 5, // Valor por defecto ya que no tenemos reseñas en la DB actual
+          review_count: 0, // Valor por defecto ya que no tenemos reseñas en la DB actual
+          reviews: [] // Valor por defecto ya que no tenemos reseñas en la DB actual
+        };
+        setProduct(adaptedProduct);
         setError(null);
       } catch (err) {
         setError('Failed to load product details.');
@@ -40,20 +53,10 @@ const ProductDetailPage = () => {
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
     
-    try {
-      await api.post(`/products/${id}/reviews`, {
-        rating,
-        text: reviewText
-      });
-      
-      // Refresh product data to show the new review
-      const response = await api.get(`/products/${id}`);
-      setProduct(response.data);
-      setReviewText('');
-      setRating(5);
-    } catch (err) {
-      console.error('Error submitting review:', err);
-    }
+    // Como no tenemos API de reseñas con la DB actual, solo mostraremos un mensaje
+    alert('La funcionalidad de reseñas no está disponible en esta versión.');
+    setReviewText('');
+    setRating(5);
   };
 
   if (loading) return <div className="flex justify-center items-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div></div>;
