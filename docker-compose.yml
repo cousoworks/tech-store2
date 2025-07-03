@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  # Combined service (Frontend + Backend)
+  techstore:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: techstore
+    restart: unless-stopped
+    environment:
+      - SERVER_HOST=https://${DOMAIN:-localhost}
+      - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS:-"http://localhost,http://localhost:3000,http://localhost:5173"}
+      - SECRET_KEY=${SECRET_KEY:-mysecretkey}
+      - SQLALCHEMY_DATABASE_URI=${DATABASE_URL:-sqlite:///./techstore.db}
+      - REACT_APP_API_URL=http://${DOMAIN:-localhost}/api/v1
+    volumes:
+      - backend_data:/app/app/static/uploads
+    ports:
+      - "80:80"
+      - "8000:8000"
+
+# Persist data
+volumes:
+  backend_data:
