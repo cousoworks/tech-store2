@@ -47,7 +47,9 @@ COPY --from=backend-build /usr/local/bin/uvicorn /usr/local/bin/uvicorn
 ENV PYTHONPATH=/app
 
 # Install supervisor to manage processes
-RUN apk add --no-cache supervisor
+RUN apk add --no-cache supervisor && \
+    mkdir -p /var/log/supervisor && \
+    mkdir -p /var/run
 
 # Copy supervisor configuration
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
