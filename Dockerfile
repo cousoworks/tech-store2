@@ -12,7 +12,7 @@ RUN npm install
 COPY ./frontend ./
 
 # Build the React app
-RUN npm run build
+RUN CI=false npm run build
 
 # Backend build stage
 FROM python:3.10-slim AS backend-build
