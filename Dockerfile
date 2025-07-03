@@ -7,6 +7,7 @@ COPY ./frontend/package*.json ./
 
 # Install dependencies
 RUN npm install
+RUN npm install react-icons
 
 # Copy the frontend code
 COPY ./frontend ./
